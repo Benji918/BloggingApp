@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BloggingApp.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using BloggingApp.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BloggingApp.Data
 {

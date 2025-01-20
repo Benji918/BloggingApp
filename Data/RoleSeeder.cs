@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using BloggingApp.Constants;
+﻿using BloggingApp.Constants;
+using Microsoft.AspNetCore.Identity;
 namespace BloggingApp.Data
 {
     public class RoleSeeder
