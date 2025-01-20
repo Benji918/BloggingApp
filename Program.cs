@@ -54,6 +54,9 @@ namespace BloggingApp
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            // to use razor endpoints(login and register for scaffolded item)
+            app.MapRazorPages();
+
             app.UseAuthorization();
 
             app.MapStaticAssets();
