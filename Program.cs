@@ -29,10 +29,19 @@ namespace BloggingApp
                 .AddEntityFrameworkStores<ApplicationDbcontext>();
 
 
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                RoleSeeder.SeedRoleAsync(services).Wait();
+                UserSeeder.SeedUserAsync(services).Wait();
+
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
