@@ -1,9 +1,6 @@
 using BloggingApp.Data;
-using BloggingApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using BloggingApp.Constants;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BloggingApp
 {
@@ -54,7 +51,7 @@ namespace BloggingApp
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            // to use razor endpoints(login and register for scaffolded item)
+            // to use razor endpoints(login and register for scaff  olded item)
             app.MapRazorPages();
 
             app.UseAuthorization();
