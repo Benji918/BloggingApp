@@ -6,8 +6,8 @@ namespace BloggingApp.Data
 {
     public class ApplicationDbcontext : IdentityDbContext
     {
-        DbSet<BlogModel> Blogs { get; set; }
-        DbSet<CommentsModel> Comments { get; set; }
+        public DbSet<BlogModel> Blogs { get; set; }
+        public DbSet<CommentsModel> Comments { get; set; }
 
         public ApplicationDbcontext(DbContextOptions<ApplicationDbcontext> options) : base(options)
         {
