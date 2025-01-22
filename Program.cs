@@ -1,4 +1,6 @@
 using BloggingApp.Data;
+using BloggingApp.Models;
+using BloggingApp.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +27,7 @@ namespace BloggingApp
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbcontext>();
 
+            builder.Services.AddScoped<IRepository<BlogModel>, BlogRepository>();
 
 
             // Add services to the container.
@@ -40,6 +43,7 @@ namespace BloggingApp
 
             }
 
+
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -51,7 +55,7 @@ namespace BloggingApp
             app.UseHttpsRedirection();
             app.UseRouting();
 
-            // to use razor endpoints(login and register for scaff  olded item)
+            // to use razor endpoints(login and register for scaffolded item)
             app.MapRazorPages();
 
             app.UseAuthorization();
