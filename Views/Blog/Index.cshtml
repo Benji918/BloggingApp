@@ -1,8 +1,18 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model IEnumerable<BlogModel>;
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h1>Blogs</h1>
+
+<div class="list-group">
+    @foreach (var blogs in Model)
+    {
+        <div class="list-group-item" id="job-posting-@blogs.Id">
+            <h3>@blogs.Title</h3>
+            <p>@blogs.Description</p>
+            <p><strong>Author: @string.Join(", ", blogs.Author)</strong></p>
+            <!-- Display the image -->
+            <img src="@Url.Content(blogs.ImageUrl)" alt="@blogs.Title" , style="max-width: 200px; height: auto;" />
+            <p><strong>Posted_Date: @blogs.CreatedDate.ToShortDateString()</strong></p>
+
+        </div>
+    }
 </div>

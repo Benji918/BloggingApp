@@ -1,0 +1,38 @@
+﻿@model BloggingApp.Models.BlogModel
+
+@{
+	ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<form method="post", action="Create", enctype="multipart/form-data">
+    <!-- CSRF Token -->
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input type="text" asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea type="text" asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Author" class="form-label"></label>
+        <input type="text" asp-for="Author" class="form-control" />
+        <span asp-validation-for="Author" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ImageUrl" class="form-label"></label>
+        <input type="file" asp-for="ImageUrl" class="form-control" name="ImageUrl" />
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+    </div>
+    <button class="btn btn-primary" type="submit">Create</button>
+
+</form>
