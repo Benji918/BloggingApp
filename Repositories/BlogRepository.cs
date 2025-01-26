@@ -34,7 +34,8 @@ namespace BloggingApp.Repositories
 
         public async Task<IEnumerable<BlogModel>> GetAllAsync()
         {
-            return await _context.Blogs.ToListAsync();
+            return await _context.Blogs.OrderByDescending(blog => blog.CreatedDate).
+                         ToListAsync();
         }
 
         public async Task<BlogModel> GetByIdAsync(int id)
@@ -57,12 +58,32 @@ namespace BloggingApp.Repositories
 
         public async Task<string> UploadImageAsync(IFormFile imageFile, string DestinationPath)
         {
+            //Allowed extensions
+            string[] allowedExtensions = { ".png", ".jpg", ".jpeg" };
+            const long maxFileSize = 1024 * 1024 * 10; //10mb
+
 
             // Ensure the destination directory exists
             if (!Directory.Exists(DestinationPath))
             {
                 Directory.CreateDirectory(DestinationPath);
             }
+
+            //validate file size
+            if (imageFile.Length > maxFileSize)
+            {
+                throw new ArgumentException("File size excceds 10MB!");
+            }
+
+
+            //validate file extension
+            var fileExtension = Path.GetExtension(imageFile.FileName).ToLower();
+            if (!allowedExtensions.Contains(fileExtension) || string.IsNullOrEmpty(fileExtension))
+            {
+                throw new ArgumentException($"File type is not allowed. Allowed file extensions {string.Join(", ", allowedExtensions)}");
+            }
+
+
 
             //Generate a unique filename to prevent conflits
             var fileName = $"{Path.GetRandomFileName()}{Path.GetExtension(imageFile.FileName)}";
