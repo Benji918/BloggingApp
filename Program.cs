@@ -61,6 +61,7 @@ namespace BloggingApp
             app.UseAuthorization();
 
             app.MapStaticAssets();
+            app.UseStaticFiles(); // Enable static file serving
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Blog}/{action=Index}/{id?}")

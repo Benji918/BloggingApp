@@ -17,18 +17,18 @@ namespace BloggingApp.Models
         public string Description { get; set; }
 
         [Required]
-        public List<string> Author { get; set; }
+        public List<string> Author { get; set; } = new List<string>();
 
         [Required]
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         [Required]
-        public DateTime UpdatedDate { get; set; } = DateTime.Now;
+        public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
 
         [Required]
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; set; } // Store the image file path or URL
 
-        public ICollection<CommentsModel> Comments { get; set; }
+        public ICollection<CommentsModel>? Comments { get; set; }
 
         [Required]
         public string UserId { get; set; }
