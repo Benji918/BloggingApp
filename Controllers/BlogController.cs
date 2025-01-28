@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BloggingApp.Data;
+using BloggingApp.Constants;
 using BloggingApp.Models;
 using Microsoft.AspNetCore.Identity;
 using BloggingApp.Repositories;
@@ -18,11 +19,21 @@ namespace BloggingApp.Controllers
             _userManager = userManager;
         }
 
-
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            IEnumerable<BlogModel> blogs = await _repository.GetAllAsync();
-            return View(blogs);
+            if (User.IsInRole(Role.AUTHOR))
+            {
+                var userId = _userManager.GetUserId(User);
+
+                IEnumerable<BlogModel> blogs = await _repository.GetAllAsync();
+                var userBlogs = blogs.Where(blog => blog.UserId == userId);
+
+                return View(userBlogs);
+            }
+
+            IEnumerable<BlogModel> allBlogs = await _repository.GetAllAsync();
+            return View(allBlogs);
 
         }
 

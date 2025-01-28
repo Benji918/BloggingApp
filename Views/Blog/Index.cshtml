@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<BlogModel>
+@using BloggingApp.Constants;
 
 <div class="container mt-5">
     <h1 class="text-center mb-4">Blogs</h1>
@@ -23,7 +24,16 @@
                         <p class="text-muted small">By: @string.Join(", ", blog.Author) • @blog.CreatedDate.ToShortDateString()</p>
                         <div class="d-flex justify-content-between">
                             <a asp-controller="Blog" asp-action="GetBlogById" asp-route-id="@blog.Id" class="btn btn-primary btn-sm">Edit</a>
-                            <button class="btn btn-danger btn-sm" onclick="confirmDelete(@blog.Id, '@blog.Title')">Delete</button>
+
+                            <button class="btn btn-outline-success btn-sm">Add Comment</button>
+
+							@if (User.IsInRole(Role.AUTHOR) || User.IsInRole(Role.ADMIN))
+							{
+								<button class="btn btn-danger btn-sm" onclick="confirmDelete(@blog.Id, '@blog.Title')">Delete</button>
+							}
+
+                            
+                           
                         </div>
                     </div>
                 </div>
