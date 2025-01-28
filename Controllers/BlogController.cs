@@ -85,7 +85,8 @@ namespace BloggingApp.Controllers
             if (ModelState.IsValid)
             {
                 await _repository.AddAsync(blogModel);
-                return RedirectToAction(nameof(Index));
+                TempData["Message"] = "Blog Created Successfully!";
+                return RedirectToAction("Index");
             }
 
             //Log all th errors for the ModelState
@@ -101,16 +102,11 @@ namespace BloggingApp.Controllers
             return View(blogModel);
         }
 
-        [HttpGet]
-        public IActionResult Update()
-        {
-            return View();
-        }
 
         [Authorize]
         [ValidateAntiForgeryToken]
-        [HttpPut]
-        public async Task<IActionResult> Update(BlogModel blogModel)
+        [HttpPost]
+        public async Task<IActionResult> Update(BlogModel blogModel, IFormFile ImageUrl)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -118,8 +114,83 @@ namespace BloggingApp.Controllers
                 return Unauthorized("User Not Found!");
             }
 
+            // Handle the image upload
+            if (ImageUrl != null && ImageUrl.Length > 0)
+            {
+                try
+                {
+                    // Ensure the image is uploaded to the correct folder
+                    string destinationPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "blogs");
+
+                    if (!Directory.Exists(destinationPath))
+                    {
+                        Directory.CreateDirectory(destinationPath);
+                    }
+
+                    var imageUrlString = await _repository.UploadImageAsync(ImageUrl, destinationPath);
+                    blogModel.ImageUrl = $"/blogs/{Path.GetFileName(imageUrlString)}"; // Save the relative URL
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("ImageUrl", ex.Message);
+                }
+            }
+
+            blogModel.UserId = user.Id;
+            blogModel.User = user;
+
+            // Clear the validation error for UserId and revalidate
+            ModelState.ClearValidationState(nameof(blogModel.UserId));
+            ModelState.ClearValidationState(nameof(blogModel.User));
+            ModelState.ClearValidationState(nameof(blogModel.ImageUrl));
+            TryValidateModel(blogModel);
+
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("GetBlogById", new { id = blogModel.Id });
+            }
+
             await _repository.UpdateAsync(blogModel);
-            return View(blogModel);
+            TempData["Message"] = "Blog Updated Successfully!";
+            // Log the values
+            Console.WriteLine($"Title: {blogModel.Title}, Description: {blogModel.Description}, ImageUrl: {blogModel.ImageUrl}");
+            return RedirectToAction("Index");
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetBlogById(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Unauthorized(new { message = "User Not Found!" });
+            }
+            var blog = await _repository.GetByIdAsync(id);
+
+            if (blog == null)
+            {
+                return NotFound(new { message = "Blog Not Found!" });
+            }
+
+            return View(blog);
+        }
+
+        [Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var blog = await _repository.GetByIdAsync(id);
+            if (blog == null)
+            {
+                return NotFound();
+            }
+
+            await _repository.DeleteAsync(id);
+
+
+            return Ok(new { message = "Blog Deleted Successfully!" });
         }
     }
 }
+
