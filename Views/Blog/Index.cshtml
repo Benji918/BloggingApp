@@ -1,42 +1,40 @@
-﻿@model IEnumerable<BlogModel>;
+﻿@model IEnumerable<BlogModel>
 
-<h1>Blogs</h1>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Blogs</h1>
 
-@{
-	var message = TempData["Message"] as string;
-}
-
-@if (!string.IsNullOrEmpty(message))
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <b>@message</b>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
-
-<div class="list-group">    
-
-    @foreach (var blogs in Model)
+    @if (!string.IsNullOrEmpty(TempData["Message"] as string))
     {
-        <div class="list-group-item" id="blog-posting-@blogs.Id">
-            <h3>@blogs.Title</h3>
-            <p>@blogs.Description</p>
-            <p><strong>Author: @string.Join(", ", blogs.Author)</strong></p>
-            <!-- Display the image -->
-            <img src="@Url.Content(blogs.ImageUrl)" alt="@blogs.Title" , style="max-width: 200px; height: auto;" />
-            <p><strong>Posted_Date: @blogs.CreatedDate.ToShortDateString()</strong></p>
-
-            <div>
-                <a asp-controller="Blog" asp-action="GetBlogById" class="btn btn-primary" asp-route-id="@blogs.Id">Edit</a>
-                <button class="btn btn-danger" onclick="confirmDelete(@blogs.Id, '@blogs.Title')">Delete</button>
-            </div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>@TempData["Message"]</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     }
+
+    <div class="row g-4">
+        @foreach (var blog in Model)
+        {
+            <div class="col-md-4" id="blog-posting-@blog.Id">
+                <div class="card shadow-sm h-100">
+                    <img src="@Url.Content(blog.ImageUrl)" class="card-img-top" alt="@blog.Title" style="max-height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">@blog.Title</h5>
+                        <p class="card-text text-truncate" style="max-height: 60px; overflow: hidden;">@blog.Description</p>
+                        <p class="text-muted small">By: @string.Join(", ", blog.Author) • @blog.CreatedDate.ToShortDateString()</p>
+                        <div class="d-flex justify-content-between">
+                            <a asp-controller="Blog" asp-action="GetBlogById" asp-route-id="@blog.Id" class="btn btn-primary btn-sm">Edit</a>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDelete(@blog.Id, '@blog.Title')">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
@@ -77,7 +75,7 @@
         function deleteBlog(blogId) {
             fetch(`/Blog/Delete/${blogId}`, {
                 method: 'DELETE',
-                
+
             })
             .then(response => {
                 if (response.ok) {
