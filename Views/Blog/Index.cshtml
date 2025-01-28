@@ -2,10 +2,23 @@
 
 <h1>Blogs</h1>
 
-<div class="list-group">
+@{
+	var message = TempData["Message"] as string;
+}
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <b>@message</b>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="list-group">    
+
     @foreach (var blogs in Model)
     {
-        <div class="list-group-item" id="job-posting-@blogs.Id">
+        <div class="list-group-item" id="blog-posting-@blogs.Id">
             <h3>@blogs.Title</h3>
             <p>@blogs.Description</p>
             <p><strong>Author: @string.Join(", ", blogs.Author)</strong></p>
@@ -13,6 +26,73 @@
             <img src="@Url.Content(blogs.ImageUrl)" alt="@blogs.Title" , style="max-width: 200px; height: auto;" />
             <p><strong>Posted_Date: @blogs.CreatedDate.ToShortDateString()</strong></p>
 
+            <div>
+                <a asp-controller="Blog" asp-action="GetBlogById" class="btn btn-primary" asp-route-id="@blogs.Id">Edit</a>
+                <button class="btn btn-danger" onclick="confirmDelete(@blogs.Id, '@blogs.Title')">Delete</button>
+            </div>
         </div>
     }
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the blog post titled <b><span id="blogTitle"></span></b>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Function to open the modal and set the blog details
+        function confirmDelete(blogId, blogTitle) {
+            document.getElementById('blogTitle').textContent = blogTitle;
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+            // Remove previous event listeners to avoid duplication
+            confirmDeleteBtn.replaceWith(confirmDeleteBtn.cloneNode(true));
+
+            // Attach a new click event listener for deletion
+            document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
+                deleteBlog(blogId);
+            });
+
+            // Show the modal
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
+
+        // Function to send AJAX request to delete the blog
+        function deleteBlog(blogId) {
+            fetch(`/Blog/Delete/${blogId}`, {
+                method: 'DELETE',
+                
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Remove the deleted blog from the DOM
+                    document.getElementById(`blog-posting-${blogId}`).remove();
+
+                    // Close the modal
+                    var deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                    deleteModal.hide();
+
+                } else {
+                    alert('Failed to delete the blog. Please try again.');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+}

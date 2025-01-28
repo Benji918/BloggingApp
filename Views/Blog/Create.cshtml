@@ -6,7 +6,7 @@
 
 <h1>Create</h1>
 
-<form method="post", action="Create", enctype="multipart/form-data">
+<form method="post", action="Create", enctype="multipart/form-data" asp-antiforgery="true">
     <!-- CSRF Token -->
     @Html.AntiForgeryToken()
 

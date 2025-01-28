@@ -1,0 +1,39 @@
+﻿@model BlogModel;
+
+<div class="modal-body">
+    <form method="post" asp-action="Update" asp-controller="Blog" enctype="multipart/form-data">
+        <!-- CSRF Token -->
+        @Html.AntiForgeryToken()
+        <input type="hidden" id="blogId" name="Id" value="@Model.Id">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" class="form-control" id="title" name="Title" value="@Model.Title">
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea class="form-control" id="description" name="Description">@Model.Description</textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label for="author">Author</label>
+			<input type="text" class="form-control" id="author" name="author" value="@string.Join(", ", Model.Author)"/> 
+            <span asp-validation-for="Author" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label for="imageurl">Imageurl</label>
+            <div>
+                <img src="@Url.Content(Model.ImageUrl)" alt="Current Image" style="max-width: 200px; height: auto;" />
+            </div>
+            <input type="file" class="form-control" id="imageurl" name="ImageUrl"/>
+            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-success">Save</button>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
