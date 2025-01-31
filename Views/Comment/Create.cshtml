@@ -1,0 +1,14 @@
+﻿@model BloggingApp.Models.CommentsModel;
+
+<div class="offcanvas-body">
+    <form method="post" asp-action="Create" asp-controller="Comment">
+        @Html.AntiForgeryToken()
+        <input type="hidden" id="blogId" name="blogId" value="@ViewBag.BlogId" />
+        <div class="mb-3">
+            <label asp-for="Comment" class="form-label">Your Comment</label>
+            <textarea class="form-control" id="commentText" name="Comment" rows="4" required></textarea>
+            <span asp-validation-for="Comment" class="text-danger"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>

@@ -28,10 +28,17 @@ namespace BloggingApp
                 .AddEntityFrameworkStores<ApplicationDbcontext>();
 
             builder.Services.AddScoped<IRepository<BlogModel>, BlogRepository>();
+            builder.Services.AddScoped<IRepository<CommentsModel>, CommentRepository>();
 
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.ListenAnyIP(5194); // HTTP
+                options.ListenAnyIP(7112, listenOptions => listenOptions.UseHttps()); // HTTPS
+            });
 
             var app = builder.Build();
 

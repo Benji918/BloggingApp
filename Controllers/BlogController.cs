@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BloggingApp.Data;
+using BloggingApp.ViewModel;
 using BloggingApp.Constants;
 using BloggingApp.Models;
 using Microsoft.AspNetCore.Identity;
@@ -11,13 +12,18 @@ namespace BloggingApp.Controllers
     public class BlogController : Controller
     {
         private readonly IRepository<BlogModel> _repository;
+        private readonly IRepository<CommentsModel> _commentrepository;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public BlogController(IRepository<BlogModel> repository, UserManager<IdentityUser> userManager)
+        public BlogController(IRepository<BlogModel> repository, UserManager<IdentityUser> userManager,
+            IRepository<CommentsModel> commentrepository)
         {
             _repository = repository;
             _userManager = userManager;
+            _commentrepository = commentrepository;
         }
+
+
 
         [AllowAnonymous]
         public async Task<IActionResult> Index()
@@ -33,7 +39,14 @@ namespace BloggingApp.Controllers
             }
 
             IEnumerable<BlogModel> allBlogs = await _repository.GetAllAsync();
-            return View(allBlogs);
+            IEnumerable<CommentsModel> allComments = await _commentrepository.GetAllAsync();
+
+            var viewModel = new BlogWithCommentsViewModel
+            {
+                Blogs = allBlogs,
+                Comments = allComments
+            };
+            return View(viewModel);
 
         }
 
