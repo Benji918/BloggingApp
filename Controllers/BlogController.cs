@@ -39,14 +39,8 @@ namespace BloggingApp.Controllers
             }
 
             IEnumerable<BlogModel> allBlogs = await _repository.GetAllAsync();
-            IEnumerable<CommentsModel> allComments = await _commentrepository.GetAllAsync();
 
-            var viewModel = new BlogWithCommentsViewModel
-            {
-                Blogs = allBlogs,
-                Comments = allComments
-            };
-            return View(viewModel);
+            return View(allBlogs);
 
         }
 
