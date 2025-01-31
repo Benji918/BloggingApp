@@ -1,8 +1,12 @@
 using BloggingApp.Data;
 using BloggingApp.Models;
 using BloggingApp.Repositories;
+using BloggingApp.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
+using dotenv.net;
+using Microsoft.Extensions.Configuration;
 
 namespace BloggingApp
 {
@@ -10,7 +14,29 @@ namespace BloggingApp
     {
         public static void Main(string[] args)
         {
+            DotEnv.Load();
             var builder = WebApplication.CreateBuilder(args);
+
+            // Add environment variables to configuration (including those loaded from .env)
+            builder.Configuration.AddEnvironmentVariables();
+
+            // Manually set configuration values from environment variables
+            builder.Configuration["Smtp:Host"] = Environment.GetEnvironmentVariable("SMTP_HOST");
+            builder.Configuration["Smtp:Port"] = Environment.GetEnvironmentVariable("SMTP_PORT");
+            // Convert Port before binding
+            var smtpPort = int.TryParse(builder.Configuration["Smtp:Port"], out var portValue) ? portValue : 587;
+
+            builder.Configuration["Smtp:Port"] = smtpPort.ToString();
+            builder.Configuration["Smtp:Username"] = Environment.GetEnvironmentVariable("SMTP_USERNAME");
+            builder.Configuration["Smtp:Password"] = Environment.GetEnvironmentVariable("SMTP_PASSWORD");
+            builder.Configuration["Smtp:FromEmail"] = Environment.GetEnvironmentVariable("SMTP_FROM_EMAIL");
+            //Console.WriteLine(builder.Configuration["Smtp:FromEmail"]);
+
+
+            builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("Smtp"));
+            // Add logging
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
 
             builder.Services.AddDbContext<ApplicationDbcontext>(
                 options =>
@@ -22,7 +48,7 @@ namespace BloggingApp
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options =>
             {
-                options.SignIn.RequireConfirmedAccount = false;
+                options.SignIn.RequireConfirmedAccount = true;
             })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbcontext>();
@@ -30,6 +56,8 @@ namespace BloggingApp
             builder.Services.AddScoped<IRepository<BlogModel>, BlogRepository>();
             builder.Services.AddScoped<IRepository<CommentsModel>, CommentRepository>();
 
+            //Add email service
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();

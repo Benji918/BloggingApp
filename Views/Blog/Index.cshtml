@@ -1,4 +1,4 @@
-﻿@model BloggingApp.ViewModel.BlogWithCommentsViewModel;
+﻿@model IEnumerable<BloggingApp.Models.BlogModel>;
 @using BloggingApp.Constants;
 
 <div class="container mt-5">
@@ -13,7 +13,7 @@
     }
 
     <div class="row g-4">
-        @foreach (var blog in Model.Blogs)
+        @foreach (var blog in Model)
         {
             <div class="col-md-4" id="blog-posting-@blog.Id">
                 <div class="card shadow-sm h-100">
