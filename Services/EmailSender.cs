@@ -24,10 +24,11 @@ namespace BloggingApp.Services
         {
             try
             {
-                using (var smtpClient = new SmtpClient(_smtpsettings.Host, _smtpsettings.Port))
+                using (var smtpClient = new SmtpClient(_smtpsettings.Host, 465))
                 {
+                    
                     {
-                        smtpClient.Credentials = new NetworkCredential(_smtpsettings.Username, _smtpsettings.Password);
+                        smtpClient.Credentials = new System.Net.NetworkCredential(_smtpsettings.Username, _smtpsettings.Password);
                         smtpClient.UseDefaultCredentials = false;
                         smtpClient.EnableSsl = true;
                     };
@@ -40,22 +41,17 @@ namespace BloggingApp.Services
                         IsBodyHtml = true
                     };
                     mailMessage.To.Add(email);
-                    //Console.WriteLine(_smtpsettings.Username);
+                    //smtpClient.Send(mailMessage);
+                    /*Console.WriteLine(_smtpsettings.Value)*/;
                     await smtpClient.SendMailAsync(mailMessage);
                 }
             }
-            catch (SmtpException ex)
-            {
-                _loggger.LogError(ex, "SMTP error occurred while sending email.");
-            }
-            catch (SocketException ex)
-            {
-                _loggger.LogError(ex, "Network error occurred while connecting to SMTP server.");
-            }
             catch (Exception ex)
             {
-                _loggger.LogError(ex, "Error sending email");
+                _loggger.LogError(ex, "SMTP error occurred while sending email.");
+                throw; // Rethrow so the caller knows it failed.
             }
+           
 
 
 
